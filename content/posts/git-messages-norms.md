@@ -1,6 +1,6 @@
 +++
 date = '2025-01-10T00:45:43+08:00'
-draft = true
+draft = false
 title = 'Git代码提交规范'
 +++
 ## 前言
