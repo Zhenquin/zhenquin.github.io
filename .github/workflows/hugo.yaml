@@ -76,3 +76,5 @@ jobs:
       - name: 部署到GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4 # 升级至 v4 以匹配并顺利部署
+  
+  buildFuture: true
