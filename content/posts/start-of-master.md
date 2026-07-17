@@ -1,6 +1,6 @@
 +++
 date = '2026-07-17T11:05:34+08:00'
-draft = true
+draft = false
 title = '硕士的开始'
 +++
 ## 前情提要
