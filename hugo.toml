@@ -1,5 +1,10 @@
 baseURL = 'https://zhenquin.github.io/'
-languageCode = 'zh-cn'
+locale = 'zh-cn'
 title = "Zhenquin's blog"
 theme = 'hugo-PaperMod'
 buildFuture = true
+
+[[menu.main]]
+name = '论文'
+url = '/papers/'
+weight = 10

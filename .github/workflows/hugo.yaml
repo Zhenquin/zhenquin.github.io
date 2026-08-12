@@ -32,14 +32,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      HUGO_VERSION: 0.140.2
+      HUGO_VERSION: 0.164.0
     steps:
       - name: 安装Hugo CLI
         run: |
           wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
           && sudo dpkg -i ${{ runner.temp }}/hugo.deb          
-      - name: 安装Dart Sass
-        run: sudo snap install dart-sass
       - name: 检出
         uses: actions/checkout@v4
         with:
@@ -48,8 +46,6 @@ jobs:
       - name: 设置Pages
         id: pages
         uses: actions/configure-pages@v5  # 升级至 v5 解决废弃警告与兼容性
-      - name: 安装Node.js依赖
-        run: "[[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true"
       - name: 使用Hugo构建
         env:
           # 为了与Hugo模块的最大向后兼容性

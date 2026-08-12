@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>miniF2F：形式奥赛级数学的跨系统基准</title>
+  <style>
+    :root {
+      --paper: #f4efe3;
+      --panel: rgba(255, 252, 245, 0.88);
+      --panel-strong: #fffdf8;
+      --ink: #1f1b18;
+      --muted: #6b6258;
+      --accent: #8f3d28;
+      --accent-soft: rgba(143, 61, 40, 0.12);
+      --line: rgba(31, 27, 24, 0.12);
+      --shadow: 0 18px 40px rgba(40, 28, 20, 0.14);
+      --tooltip-shadow: 0 18px 42px rgba(20, 16, 12, 0.18);
+      --content-width: min(920px, calc(100vw - 32px));
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        #ece9e1;
+      font-family: "Source Han Serif SC", "Noto Serif SC", "Songti SC", serif;
+      line-height: 1.9;
+    }
+
+    .shell {
+      width: var(--content-width);
+      margin: 0 auto;
+      padding: 40px 0 72px;
+    }
+
+    .masthead {
+      padding: 32px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(255, 253, 248, 0.92), rgba(247, 240, 227, 0.86));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--accent);
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      font-size: 0.82rem;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2.55rem;
+      line-height: 1.12;
+    }
+
+    .subtitle {
+      margin: 16px 0 0;
+      max-width: 48rem;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .meta {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(31, 27, 24, 0.08);
+    }
+
+    main {
+      margin-top: 26px;
+      padding: 34px clamp(18px, 3vw, 42px) 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    article {
+      font-size: 1.07rem;
+    }
+
+    section + section {
+      margin-top: 34px;
+      padding-top: 26px;
+      border-top: 1px solid rgba(31, 27, 24, 0.08);
+    }
+
+    h2,
+    h3 {
+      margin: 0 0 16px;
+      line-height: 1.3;
+    }
+
+    h2 {
+      font-size: 1.55rem;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      color: var(--accent);
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    p {
+      margin: 0 0 18px;
+    }
+
+    .sentence {
+      position: relative;
+      border-radius: 0.35em;
+      padding: 0 0.08em;
+      transition: background-color 160ms ease, color 160ms ease;
+      cursor: help;
+      outline: none;
+    }
+
+    .sentence:hover,
+    .sentence:focus-visible {
+      background: var(--accent-soft);
+    }
+
+    .sentence:focus-visible {
+      box-shadow: 0 0 0 2px rgba(143, 61, 40, 0.28);
+    }
+
+    figure {
+      margin: 28px 0;
+      padding: 18px;
+      border-radius: 8px;
+      background: var(--panel-strong);
+      border: 1px solid rgba(31, 27, 24, 0.08);
+    }
+
+    figure img,
+    figure svg {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin: 0 auto;
+      border-radius: 14px;
+    }
+
+    figcaption,
+    caption {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+      background: var(--panel-strong);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(31, 27, 24, 0.08);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      font-weight: 600;
+      background: rgba(143, 61, 40, 0.08);
+    }
+
+    .tooltip {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      max-width: min(38rem, calc(100vw - 24px));
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(31, 27, 24, 0.08);
+      background: rgba(28, 24, 20, 0.94);
+      color: #f9f5ed;
+      box-shadow: var(--tooltip-shadow);
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 140ms ease, transform 140ms ease;
+    }
+
+    .tooltip.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .tooltip-label {
+      display: block;
+      margin-bottom: 6px;
+      color: #f2c8bc;
+      font-size: 0.75rem;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .note {
+      margin-top: 28px;
+      padding: 16px 18px;
+      border-left: 4px solid var(--accent);
+      background: rgba(255, 255, 255, 0.52);
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        padding: 20px 0 42px;
+      }
+
+      .masthead,
+      main {
+        border-radius: 8px;
+      }
+
+      .meta {
+        gap: 8px;
+      }
+
+      article {
+        font-size: 1rem;
+      }
+    }
+  
+    pre { overflow-x: auto; padding: 16px; border: 1px solid var(--line); border-radius: 6px; background: #f7f7f4; line-height: 1.55; }
+    code { font-family: Consolas, 'Cascadia Mono', monospace; font-size: .9rem; }
+    ul, ol { padding-left: 1.4rem; } li { margin-bottom: .8rem; }
+    .references { font-size: .94rem; line-height: 1.65; }
+    .code-grid h3 { margin-top: 24px; }
+    @media (max-width: 520px) { h1 { font-size: 1.8rem; } th, td { padding: 8px; font-size: .82rem; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="masthead">
+      <p class="eyebrow">Chinese Reading Edition</p>
+      <h1>miniF2F：形式奥赛级数学的跨系统基准</h1>
+      <p class="subtitle">全文中文阅读版。将鼠标悬停在中文句子上，或使用键盘聚焦，可查看逐句对齐的英文原文。公式、指标与证明代码按原文保留。</p>
+      <div class="meta"><span>Kunhao Zheng</span><span>Jesse Michael Han</span><span>Stanislas Polu</span><span>ICLR 2022</span><span>共 11 页</span></div>
+    </header>
+
+    <main>
+      <article>
+        <section id="abstract">
+<h2><span class="sentence" id="s0001" tabindex="0" data-page="1" data-source="Abstract">摘要</span></h2>
+<p><span class="sentence" id="s0002" tabindex="0" data-page="1" data-source="We present miniF2F, a dataset of formal Olympiad-level mathematics problem statements intended to provide a unified cross-system benchmark for neural theorem proving.">我们提出 miniF2F：一个由奥林匹克竞赛级数学问题的形式化陈述构成的数据集，旨在为神经定理证明提供统一的跨系统基准。</span> <span class="sentence" id="s0003" tabindex="0" data-page="1" data-source="The miniF2F benchmark currently targets Metamath, Lean, Isabelle (partially) and HOL Light (partially) and consists of 488 problem statements drawn from the AIME, AMC, and the International Mathematical Olympiad (IMO), as well as material from high-school and undergraduate mathematics courses.">miniF2F 基准目前面向 Metamath、Lean、Isabelle（部分支持）和 HOL Light（部分支持），包含 488 个问题陈述；这些问题取自 AIME、AMC、国际数学奥林匹克竞赛（IMO），以及高中和本科数学课程材料。</span> <span class="sentence" id="s0004" tabindex="0" data-page="1" data-source="We report baseline results using GPT-f (Polu &amp; Sutskever, 2020), a neural theorem prover based on GPT-3 (Brown et al., 2020) and provide an analysis of its performance.">我们报告了基于 GPT-3 的神经定理证明器 GPT-f（Polu & Sutskever, 2020）的基线结果，并分析了其性能。</span> <span class="sentence" id="s0005" tabindex="0" data-page="1" data-source="We intend for miniF2F to be a community-driven effort and hope that our benchmark will help spur advances in neural theorem proving.">我们希望 miniF2F 成为一项由社区推动的工作，也希望该基准能够促进神经定理证明的发展。</span></p>
+</section>
+<section id="introduction">
+<h2><span class="sentence" id="s0006" tabindex="0" data-page="1" data-source="1 Introduction">1 引言</span></h2>
+<p><span class="sentence" id="s0007" tabindex="0" data-page="1" data-source="Shared benchmarks and datasets have historically played a crucial role in driving advances in large-scale applications of deep learning, e.g. in computer vision (Deng et al., 2009) and natural language processing (Wang et al., 2019; Rajpurkar et al., 2016; Paperno et al., 2016).">共享基准和数据集历来在推动深度学习大规模应用的发展中发挥着关键作用，例如计算机视觉（Deng et al., 2009）和自然语言处理（Wang et al., 2019; Rajpurkar et al., 2016; Paperno et al., 2016）。</span> <span class="sentence" id="s0008" tabindex="0" data-page="1" data-source="Neural theorem proving is a rapidly developing area which aims to apply techniques from deep learning to interactive theorem proving.">神经定理证明是一个快速发展的领域，旨在把深度学习技术用于交互式定理证明。</span> <span class="sentence" id="s0009" tabindex="0" data-page="1" data-source="To date, most contributions in this area have focused on individual theorem proving systems, each with a separately-implemented mathematics library and with results reported on a dataset-specific test split; examples include the HOList (Bansal et al., 2019a), CoqGym (Yang &amp; Deng, 2019) and LeanStep (Han et al., 2021) theorem proving environments and benchmarks.">迄今为止，该领域的大多数工作都聚焦于单个定理证明系统；每个系统拥有独立实现的数学库，结果也在各自数据集的测试划分上报告，例如 HOList、CoqGym 和 LeanStep 的定理证明环境与基准。</span> <span class="sentence" id="s0010" tabindex="0" data-page="1" data-source="However, benchmarks from this paradigm are not ideal for measuring the mathematical reasoning ability of neural theorem provers for several reasons.">然而，出于若干原因，这类范式下的基准并不适合衡量神经定理证明器的数学推理能力。</span> <span class="sentence" id="s0011" tabindex="0" data-page="1" data-source="Library-specific train/test splits are siloed by construction, dependent on how theorems and lemmas are split in these libraries, and as such are not directly comparable across systems.">特定于数学库的训练集/测试集划分在设计上彼此隔离，依赖于各库如何划分定理和引理，因此无法直接跨系统比较。</span> <span class="sentence" id="s0012" tabindex="0" data-page="1" data-source="Moreover, formal mathematics libraries are closer to software repositories than informal mathematical exposition, and many lemmas are implementation-specific artifacts without precise informal mathematical or cross-system translations.">此外，形式数学库更接近软件仓库，而非非形式化的数学论述；许多引理是实现特定的产物，并不存在精确的非形式化表述或跨系统翻译。</span></p>
+<p><span class="sentence" id="s0013" tabindex="0" data-page="1" data-source="To date, the neural theorem proving community has not organized its efforts around a cross-system benchmark.">迄今，神经定理证明社区尚未围绕一个跨系统基准组织研究工作。</span> <span class="sentence" id="s0014" tabindex="0" data-page="1" data-source="To address this need and to provide a common resource to research groups working on formal theorem proving, we present miniF2F, a unified cross-system benchmark of formal mathematics of progressively increasing difficulty, centering around Olympiad-level problem statements (AMC, AIME, IMO) as well as high-school and undergraduate maths classes.">为满足这一需求，并为研究形式定理证明的团队提供公共资源，我们提出 miniF2F：一个难度逐步增加的统一跨系统形式数学基准，其核心是奥赛级问题陈述（AMC、AIME、IMO），同时涵盖高中与本科数学课程。</span> <span class="sentence" id="s0015" tabindex="0" data-page="1" data-source="Both the content and name of miniF2F are inspired by the IMO Grand Challenge (Selsam et al., 2019): to build an AI that can win a gold medal in the International Mathematical Olympiad in a formal-to-formal (F2F) format.">miniF2F 的内容和名称均受到 IMO Grand Challenge（Selsam et al., 2019）的启发：构建一个能够以形式化到形式化（F2F）方式在国际数学奥林匹克竞赛中获得金牌的 AI。</span> <span class="sentence" id="s0016" tabindex="0" data-page="1" data-source="More precisely, the agent must receive IMO problems written in a formal mathematical format, and must produce a formal (i.e. machine-checkable) proof for that problem.">更具体地说，智能体必须接收以形式数学格式书写的 IMO 问题，并为该问题生成一个形式化的、即机器可检查的证明。</span></p>
+<p><span class="sentence" id="s0017" tabindex="0" data-page="1" data-source="We intend for miniF2F to serve as a stepping stone for different formal systems towards the IMO Grand Challenge (Selsam et al., 2019), as it is end-to-end verifiable, cross-platform and spans a wide range of difficulty.">我们希望 miniF2F 能够作为不同形式系统迈向 IMO Grand Challenge 的垫脚石，因为它可进行端到端验证、支持跨平台，并覆盖广泛的难度范围。</span> <span class="sentence" id="s0018" tabindex="0" data-page="1" data-source="While we report baseline results on miniF2F using GPT-f, a language model based on GPT-3 which has been finetuned for theorem proving, language models are not a mandatory approach for Olympiad problems and this assumption is not reflected in miniF2F, preserving the generality and widespread applicability of the benchmark to systems similar to DeepHOL (Bansal et al., 2019a) or Holophrasm (Whalen, 2016).">虽然我们报告了基于 GPT-f 的 miniF2F 基线结果，但语言模型并非解决奥赛问题的必要方法；miniF2F 也没有预设这一假定，从而保持了基准的通用性，并使其广泛适用于 DeepHOL 或 Holophrasm 等系统。</span></p>
+</section>
+<section id="background">
+<h2><span class="sentence" id="s0019" tabindex="0" data-page="2" data-source="2 Background and related work">2 背景与相关工作</span></h2>
+<h3><span class="sentence" id="s0020" tabindex="0" data-page="2" data-source="Benchmarks">基准</span></h3>
+<p><span class="sentence" id="s0021" tabindex="0" data-page="2" data-source="In the closely related field of (first-order) automated theorem proving (ATP), the TPTP (Sutcliffe, 2017) benchmark is a library of test problems in a unified format for ATP systems.">在关系密切的（一阶）自动定理证明（ATP）领域，TPTP（Sutcliffe, 2017）是一个采用统一格式、面向 ATP 系统的测试问题库。</span> <span class="sentence" id="s0022" tabindex="0" data-page="2" data-source="In interactive theorem proving, the &#x27;Freek 100&#x27; (Wiedijk, 2008) tracks progress across various interactive theorem provers on a list of 100 mathematical theorems.">在交互式定理证明领域，‘Freek 100’（Wiedijk, 2008）以 100 个数学定理组成的清单，追踪各种交互式定理证明器的进展。</span> <span class="sentence" id="s0023" tabindex="0" data-page="2" data-source="Wu et al. (2021) built a simplified formal proof environment INT with an associated synthetic inequality benchmark.">Wu 等人（2021）构建了简化的形式证明环境 INT，并配套建立了一个合成不等式基准。</span> <span class="sentence" id="s0024" tabindex="0" data-page="2" data-source="Competitions and communal challenges have also spurred development in formal theorem proving.">竞赛和社区挑战同样推动了形式定理证明的发展。</span> <span class="sentence" id="s0025" tabindex="0" data-page="2" data-source="The CADE ATP System Competition (CASC) (Sutcliffe, 2016) is a competition that evaluates the performance of first-order automated theorem proving systems.">CADE ATP 系统竞赛（CASC）用于评估一阶自动定理证明系统的性能。</span> <span class="sentence" id="s0026" tabindex="0" data-page="2" data-source="Proof Ground (Haslbeck et al., 2019), part of the ITP conference, is an interactive proving contest (for humans) that supports Coq, Isabelle, and Lean, which focuses on evaluating the formalization effort of proof to given problems within limited time.">ITP 会议的 Proof Ground 是一个面向人类、支持 Coq、Isabelle 和 Lean 的交互式证明竞赛，重点评估在有限时间内对给定问题进行证明形式化的工作量。</span> <span class="sentence" id="s0027" tabindex="0" data-page="2" data-source="Finally, the IMO Grand Challenge (Selsam et al., 2019), a proposal from researchers working on the interactive proof assistant Lean, aims to build a system capable of solving IMO problems in the formal-to-formal format.">最后，IMO Grand Challenge 是由 Lean 交互式证明助理研究者提出的倡议，目标是构建一个能够以形式化到形式化方式解决 IMO 问题的系统。</span></p>
+<p><span class="sentence" id="s0028" tabindex="0" data-page="2" data-source="Due to its convenient framing as a natural language processing task, the domain of informal mathematical reasoning has received more attention than the formal one.">由于很容易被表述为自然语言处理任务，非形式化数学推理领域受到的关注多于形式化数学推理。</span> <span class="sentence" id="s0029" tabindex="0" data-page="2" data-source="MATH (Hendrycks et al., 2021) is a mathematics benchmark comprising 12,500 statements in natural language where exercises are classified into 5 levels of difficulty across various domains.">MATH 是一个包含 12,500 个自然语言陈述的数学基准，其中的习题横跨多个领域，并分为 5 个难度等级。</span> <span class="sentence" id="s0030" tabindex="0" data-page="2" data-source="Each exercise is combined with a detailed step-by-step proof in natural language.">每道习题都配有用自然语言写成的详细分步证明。</span> <span class="sentence" id="s0031" tabindex="0" data-page="2" data-source="Scaling state-of-the-art models shows little amelioration on MATH, which requires advanced mathematical reasoning capabilities.">扩大当前最先进模型的规模，在需要高级数学推理能力的 MATH 上只能带来很小的改善。</span> <span class="sentence" id="s0032" tabindex="0" data-page="2" data-source="miniF2F includes a number of formalized statements from MATH.">miniF2F 收录了若干来自 MATH 的形式化陈述。</span> <span class="sentence" id="s0033" tabindex="0" data-page="2" data-source="NaturalProofs (Welleck et al., 2021) is another benchmark of natural proof in mathematics, containing 32k theorem statements and proofs; it essentially contains the proofs in ProofWiki and other resources.">NaturalProofs 是另一个自然语言数学证明基准，包含 3.2 万条定理陈述和证明，主要收录 ProofWiki 等资源中的证明。</span> <span class="sentence" id="s0034" tabindex="0" data-page="2" data-source="While MATH is more oriented towards mathematics exercises, NaturalProofs is focused on proofs of general mathematics theorems.">MATH 更侧重数学练习，而 NaturalProofs 侧重一般数学定理的证明。</span> <span class="sentence" id="s0035" tabindex="0" data-page="2" data-source="Saxton et al. (2019) built a mathematics dataset with 2 x 10^6 training data and 10^4 test data, presented in a question-answering format where each statement is paired with a question written in natural language and a direct answer without proof.">Saxton 等人（2019）构建了一个含 2×10⁶ 条训练数据和 10⁴ 条测试数据的数学数据集，采用问答格式：每个陈述配有自然语言问题和不含证明的直接答案。</span></p>
+<h3><span class="sentence" id="s0036" tabindex="0" data-page="2" data-source="Neural theorem proving">神经定理证明</span></h3>
+<p><span class="sentence" id="s0037" tabindex="0" data-page="2" data-source="HOList (Bansal et al., 2019a;b; Paliwal et al., 2020) provides an environment as well as a benchmark for HOL Light. They also propose various deep reinforcement learning approaches for theorem proving and report a pass rate of 59.91% on their benchmark.">HOList 为 HOL Light 提供了环境和基准，并提出多种用于定理证明的深度强化学习方法，在其基准上报告了 59.91% 的通过率。</span> <span class="sentence" id="s0038" tabindex="0" data-page="2" data-source="Yang &amp; Deng (2019) built CoqGym, a large-scale dataset, which comes also with a learning environment, of 71k human-written proofs in Coq proof assistant. They report a 30.0% pass rate on the held-out test theorems in CoqGym.">Yang 与 Deng（2019）构建了 CoqGym：一个大型数据集及学习环境，包含在 Coq 证明助理中人工编写的 7.1 万个证明；他们在留出的 CoqGym 测试定理上报告了 30.0% 的通过率。</span> <span class="sentence" id="s0039" tabindex="0" data-page="2" data-source="Polu &amp; Sutskever (2020) applied a decoder-only transformer similar to GPT-3 (Brown et al., 2020) to proof steps prediction in Metamath combined with a log-probability based proof search.">Polu 与 Sutskever（2020）将类似 GPT-3 的纯解码器 Transformer 用于 Metamath 中的证明步骤预测，并结合基于对数概率的证明搜索。</span> <span class="sentence" id="s0040" tabindex="0" data-page="2" data-source="They also proposed a methodology to train a value function to further guide proof search, achieving a 56.22% pass rate on the held-out test set.">他们还提出了训练价值函数以进一步引导证明搜索的方法，在留出测试集上达到 56.22% 的通过率。</span> <span class="sentence" id="s0041" tabindex="0" data-page="2" data-source="Large language models were applied to Lean by Han et al. (2021). They created an environment around the Lean prover targeted to machine learning and propose a dataset extracted from low level proof artifacts that is shown to boost performance when used as a self-supervised co-training objective.">Han 等人（2021）把大语言模型用于 Lean，围绕 Lean 证明器建立了面向机器学习的环境，并提出一个从底层证明产物中抽取的数据集；将该数据集作为自监督协同训练目标能够提升性能。</span> <span class="sentence" id="s0042" tabindex="0" data-page="2" data-source="They report a 48.4% pass rate on held-out test statements from mathlib, Lean&#x27;s mathematical library (mathlib Community, 2020).">他们在 Lean 数学库 mathlib 的留出测试陈述上报告了 48.4% 的通过率。</span></p>
+</section>
+<section id="benchmark">
+<h2><span class="sentence" id="s0043" tabindex="0" data-page="2" data-source="3 miniF2F benchmark">3 miniF2F 基准</span></h2>
+<p><span class="sentence" id="s0044" tabindex="0" data-page="2" data-source="miniF2F is a dataset of manually formalized statements of Olympiad type problems, aligned in Lean, Metamath, and Isabelle (partial at the time of writing), providing a cross-platform benchmark for formal mathematical reasoning.">miniF2F 是一个由奥赛类问题的人工形式化陈述组成的数据集，这些陈述在 Lean、Metamath 和 Isabelle（撰写本文时仅部分完成）中相互对齐，从而为形式数学推理提供跨平台基准。</span> <span class="sentence" id="s0045" tabindex="0" data-page="3" data-source="Olympiad type problems are of particular interest to compare automated provers across different formal systems as the theories required to solve them are well identified and they generally do not require the definition of new mathematical concepts (a capability that remains beyond the current neural theorem proving state of the art).">奥赛类问题特别适合用来比较不同形式系统中的自动证明器，因为解决这些问题所需的理论界定明确，而且通常不需要定义新的数学概念——这种能力仍超出当前神经定理证明的技术水平。</span></p>
+<table><caption><span class="sentence" id="s0046" tabindex="0" data-page="3" data-source="Table 1: Number of statements and their provenance in miniF2F v1">表 1：miniF2F v1 中陈述的数量及来源</span></caption><thead><tr><th><span class="sentence" id="s0047" tabindex="0" data-page="3" data-source="Source">来源</span></th><th><span class="sentence" id="s0048" tabindex="0" data-page="3" data-source="Test set">测试集</span></th><th><span class="sentence" id="s0049" tabindex="0" data-page="3" data-source="Validation set">验证集</span></th></tr></thead><tbody><tr><td><span class="sentence" id="s0050" tabindex="0" data-page="3" data-source="Total">总计</span></td><td><span class="sentence" id="s0051" tabindex="0" data-page="3" data-source="244">244</span></td><td><span class="sentence" id="s0052" tabindex="0" data-page="3" data-source="244">244</span></td></tr><tr><td><span class="sentence" id="s0053" tabindex="0" data-page="3" data-source="IMO">IMO</span></td><td><span class="sentence" id="s0054" tabindex="0" data-page="3" data-source="20">20</span></td><td><span class="sentence" id="s0055" tabindex="0" data-page="3" data-source="20">20</span></td></tr><tr><td><span class="sentence" id="s0056" tabindex="0" data-page="3" data-source="AIME">AIME</span></td><td><span class="sentence" id="s0057" tabindex="0" data-page="3" data-source="15">15</span></td><td><span class="sentence" id="s0058" tabindex="0" data-page="3" data-source="15">15</span></td></tr><tr><td><span class="sentence" id="s0059" tabindex="0" data-page="3" data-source="AMC">AMC</span></td><td><span class="sentence" id="s0060" tabindex="0" data-page="3" data-source="45">45</span></td><td><span class="sentence" id="s0061" tabindex="0" data-page="3" data-source="45">45</span></td></tr><tr><td><span class="sentence" id="s0062" tabindex="0" data-page="3" data-source="MATH - Algebra (levels 5/4/3/2/1)">MATH - 代数（等级 5/4/3/2/1）</span></td><td><span class="sentence" id="s0063" tabindex="0" data-page="3" data-source="14/14/14/14/14">14/14/14/14/14</span></td><td><span class="sentence" id="s0064" tabindex="0" data-page="3" data-source="14/14/14/14/14">14/14/14/14/14</span></td></tr><tr><td><span class="sentence" id="s0065" tabindex="0" data-page="3" data-source="MATH - Number Theory (levels 5/4/3/2/1)">MATH - 数论（等级 5/4/3/2/1）</span></td><td><span class="sentence" id="s0066" tabindex="0" data-page="3" data-source="16/11/11/11/11">16/11/11/11/11</span></td><td><span class="sentence" id="s0067" tabindex="0" data-page="3" data-source="16/11/11/11/11">16/11/11/11/11</span></td></tr><tr><td><span class="sentence" id="s0068" tabindex="0" data-page="3" data-source="Custom - Algebra/Number Theory/Induction">自定义 - 代数/数论/归纳</span></td><td><span class="sentence" id="s0069" tabindex="0" data-page="3" data-source="18/8/8">18/8/8</span></td><td><span class="sentence" id="s0070" tabindex="0" data-page="3" data-source="18/8/8">18/8/8</span></td></tr></tbody></table>
+<p><span class="sentence" id="s0071" tabindex="0" data-page="3" data-source="The formalized statements in miniF2F are drawn from multiple sources, ranging from high school and undergraduate level exercises to Olympiad problems.">miniF2F 中的形式化陈述来自多种来源，从高中和本科练习到奥赛题均有覆盖。</span> <span class="sentence" id="s0072" tabindex="0" data-page="3" data-source="miniF2F also covers different sub-subjects in mathematics as well as proof strategies, focusing on the types of exercises whose statements are expressible in most formal systems.">miniF2F 还涵盖不同的数学分支和证明策略，重点选择那些陈述能在多数形式系统中表达的习题类型。</span> <span class="sentence" id="s0073" tabindex="0" data-page="3" data-source="This leads to a systemic focus on algebra, number theory and inequalities because, for example, geometry and combinatorial problems are generally challenging to formalize due to only nascent efforts in these areas in most formal systems.">这使基准系统性地偏重代数、数论和不等式，因为几何与组合问题通常很难形式化，而多数形式系统在这些领域的工作仍处于起步阶段。</span> <span class="sentence" id="s0074" tabindex="0" data-page="3" data-source="The statements in miniF2F are all manually formalized and selected to cover a variety of difficulty levels for both humans and machines.">miniF2F 的所有陈述均由人工形式化，并经过筛选，以覆盖对人类和机器而言的多种难度级别。</span> <span class="sentence" id="s0075" tabindex="0" data-page="3" data-source="Formal proofs for these statements are optionally attached.">这些陈述可以选择性地附带形式证明。</span></p>
+<p><span class="sentence" id="s0076" tabindex="0" data-page="3" data-source="miniF2F draws from AIME, AMC, IMO problems as well as problems from the MATH informal dataset.">miniF2F 从 AIME、AMC、IMO 以及非形式化的 MATH 数据集中选取问题。</span> <span class="sentence" id="s0077" tabindex="0" data-page="3" data-source="Formalizing problems from the MATH dataset serves two purposes.">将 MATH 问题形式化有两个目的。</span> <span class="sentence" id="s0078" tabindex="0" data-page="3" data-source="First, problems in MATH are segmented by difficulty level (from 1 to 5), randomly selecting a subset from each of these difficulty levels allows miniF2F to cover a wider range of difficulty.">第一，MATH 按 1 至 5 级划分问题难度，从每个等级随机抽取子集，使 miniF2F 能覆盖更广泛的难度。</span> <span class="sentence" id="s0079" tabindex="0" data-page="3" data-source="Second, it provides the community an opportunity to compare capabilities of formal automated prover to their informal counter-parts as discussed in later sections.">第二，它使社区有机会比较形式自动证明器与后文讨论的非形式化对应方法。</span> <span class="sentence" id="s0080" tabindex="0" data-page="3" data-source="miniF2F comprises a test set and a validation set, which are a stratified random split from the statements we formalized such that each set equally covers each problem type and difficulty (when available).">miniF2F 包含测试集和验证集；二者由已形式化陈述进行分层随机划分而成，使每个集合都同等覆盖各类问题及其难度（若有难度标注）。</span> <span class="sentence" id="s0081" tabindex="0" data-page="3" data-source="Table 1 shows a detailed distribution of these statements.">表 1 展示了这些陈述的详细分布。</span></p>
+<h3><span class="sentence" id="s0082" tabindex="0" data-page="3" data-source="Versioning">版本管理</span></h3>
+<p><span class="sentence" id="s0083" tabindex="0" data-page="3" data-source="miniF2F is an evolving effort and new statements will continuously be added.">miniF2F 是一项持续演进的工作，新陈述将不断加入。</span> <span class="sentence" id="s0084" tabindex="0" data-page="3" data-source="Periodically, we will freeze versions of the benchmark.">我们会定期冻结基准版本。</span> <span class="sentence" id="s0085" tabindex="0" data-page="3" data-source="The current version of the benchmark is v1 and results in this paper are reported using this version.">本文采用的当前基准版本为 v1，所报告结果也均基于该版本。</span> <span class="sentence" id="s0086" tabindex="0" data-page="3" data-source="v1 comprises 244 test and 244 valid statements.">v1 包含 244 条测试陈述和 244 条验证陈述。</span> <span class="sentence" id="s0087" tabindex="0" data-page="3" data-source="The set of statements of each version is guaranteed to remain stable, only allowing fixes in case errors are later discovered.">每个版本的陈述集合都保证保持稳定，仅允许在后续发现错误时进行修正。</span></p>
+<h3><span class="sentence" id="s0088" tabindex="0" data-page="3" data-source="Rules of engagement and License">参与规则与许可证</span></h3>
+<p><span class="sentence" id="s0089" tabindex="0" data-page="3" data-source="miniF2F is meant to serve as a shared resource for research groups working on applying deep learning to formal theorem proving.">miniF2F 旨在作为研究团队将深度学习应用于形式定理证明的共享资源。</span> <span class="sentence" id="s0090" tabindex="0" data-page="3" data-source="There is no formal process to submit evaluation results and researchers are simply invited to cite miniF2F indicating the version used in their evaluations.">提交评测结果没有正式流程；研究者只需引用 miniF2F 并注明评测所用版本。</span> <span class="sentence" id="s0091" tabindex="0" data-page="3" data-source="We also encourage them to contribute proofs found by their approaches back to the benchmark.">我们也鼓励研究者把其方法找到的证明贡献回基准。</span> <span class="sentence" id="s0092" tabindex="0" data-page="3" data-source="The parts of the benchmark associated with each theorem prover are meant to be licensed in a way that is aligned with the licensing usage associated with the theorem prover&#x27;s main library.">与各定理证明器相关的基准部分，其许可证将与该证明器主要数学库的许可惯例保持一致。</span> <span class="sentence" id="s0093" tabindex="0" data-page="4" data-source="As a result, the Metamath version of the benchmark is released under the MIT License, while the Lean and Isabelle versions are released under the Apache License.">因此，Metamath 版本采用 MIT License，Lean 和 Isabelle 版本采用 Apache License。</span></p>
+<h3><span class="sentence" id="s0094" tabindex="0" data-page="4" data-source="Formalization effort and challenges">形式化工作量与挑战</span></h3>
+<p><span class="sentence" id="s0095" tabindex="0" data-page="4" data-source="We found that, for trained practitioners (but not necessarily experts, including students recently introduced to formal systems), formalizing a statement takes about 15 minutes on average, and reviewing a formalized statement, about half of that on average.">我们发现，对于受过训练的实践者——不一定是专家，也包括刚接触形式系统的学生——形式化一个陈述平均约需 15 分钟，审阅形式化陈述平均约需其一半时间。</span> <span class="sentence" id="s0096" tabindex="0" data-page="4" data-source="Note that not all exercises are directly or naturally formalizable.">并非所有习题都能直接或自然地形式化。</span> <span class="sentence" id="s0097" tabindex="0" data-page="4" data-source="In particular, multi-choice questions, word problems, and exercises that require to explicit a witness or a set as part of the answer present interesting challenges.">尤其是选择题、应用题，以及要求显式给出见证或集合的问题，会带来值得关注的挑战。</span></p>
+<ul><li><span class="sentence" id="s0098" tabindex="0" data-page="4" data-source="Multi-choice questions: these problems are generally straightforwardly formalizable by reformulating the statement using the right answer only, and could be made fair in a competitive setup by formalizing all possible choices and running automated provers on all of them, attributing points only if a proof of the correct answer is provided.">选择题：通常只需使用正确答案重新表述陈述即可直接形式化；若用于竞赛，可以把所有选项都形式化并让自动证明器逐一运行，仅在给出正确选项的证明时计分，从而保证公平。</span></li><li><span class="sentence" id="s0099" tabindex="0" data-page="4" data-source="Word problems: where significant information is presented in natural language generally require non-trivial efforts to be formalized. We generally formalized them by explicitly modeling the mathematics concepts and expression presented in natural language while attempting as best as possible to preserve the mathematical difficulty of the original problem.">应用题：当大量信息以自然语言呈现时，形式化通常需要相当多的工作；我们一般会显式建模自然语言中的数学概念和表达，同时尽量保留原题的数学难度。</span> <span class="sentence" id="s0100" tabindex="0" data-page="4" data-source="Sometimes the formalization work is most of the difficulty associated with the original question; in such cases we would discard the problem entirely.">有时，形式化本身构成了原题的大部分难度；遇到这种情况，我们会完全舍弃该题。</span></li><li><span class="sentence" id="s0101" tabindex="0" data-page="4" data-source="Problems that require to explicit a set or witness (e.g. find all ... such that ...) are not directly formalizable.">要求显式给出集合或见证的问题（例如‘求所有满足……的……’）无法直接形式化。</span> <span class="sentence" id="s0102" tabindex="0" data-page="4" data-source="The best approximation we relied on for these was to formalize the statement with the witness or answer provided, turning such exercises into the generation of a proof that the answer is correct, and if needed, that it is the unique one, which is, at times, a much easier exercise.">我们采用的最佳近似方式，是把给定的见证或答案写入形式陈述，将习题转化为生成一个证明，说明答案正确且在必要时是唯一的；但这有时会令问题容易得多。</span> <span class="sentence" id="s0103" tabindex="0" data-page="4" data-source="A non negligible portion of IMO problems are as such, which we foresee could become a challenge in the future, to fairly compare humans to automated proving systems in a competitive setup.">相当一部分 IMO 问题属于此类；我们预计，在竞赛环境中公平比较人类与自动证明系统时，这会成为未来的一项挑战。</span></li></ul>
+<h3><span class="sentence" id="s0104" tabindex="0" data-page="4" data-source="Porting effort">移植工作</span></h3>
+<p><span class="sentence" id="s0105" tabindex="0" data-page="4" data-source="In addition to Metamath, Lean, Isabelle (work in progress) and HOL Light (work in progress), we are eager to extend the coverage of miniF2F to Coq, and will welcome any effort in that direction or to extend miniF2F to further systems.">除 Metamath、Lean、Isabelle（开发中）和 HOL Light（开发中）外，我们也希望把 miniF2F 扩展到 Coq，并欢迎任何朝此方向或其他系统扩展的工作。</span></p>
+</section>
+<section id="experiments">
+<h2><span class="sentence" id="s0106" tabindex="0" data-page="4" data-source="4 Experiments">4 实验</span></h2>
+<p><span class="sentence" id="s0107" tabindex="0" data-page="4" data-source="In this section, in order to study baseline performances associated with existing systems, we report pass rates achieved by GPT-f applied to Metamath, GPT-f/PACT applied to Lean as well as a baseline prover implemented in Lean denoted as the tidy baseline.">为研究现有系统的基线性能，本节报告 GPT-f 在 Metamath 上的通过率、GPT-f/PACT 在 Lean 上的通过率，以及我们在 Lean 中实现的 tidy 基线证明器的通过率。</span> <span class="sentence" id="s0108" tabindex="0" data-page="4" data-source="Pass rates are reported as Pass@N where N is the number of proof search attempts per statement.">通过率报告为 Pass@N，其中 N 是每个陈述的证明搜索尝试次数。</span> <span class="sentence" id="s0109" tabindex="0" data-page="4" data-source="Pass@N is computed by running more attempts per statement, averaged to get an unbiased, low-variance estimate.">Pass@N 通过对每个陈述运行更多次尝试计算，并取平均，以获得无偏、低方差的估计。</span></p>
+<h3><span class="sentence" id="s0110" tabindex="0" data-page="4" data-source="4.1 Metamath">4.1 Metamath</span></h3>
+<p><span class="sentence" id="s0111" tabindex="0" data-page="4" data-source="Metamath is powered by a meta logic system based on a single substitution rule.">Metamath 由一个只基于单条替换规则的元逻辑系统驱动。</span> <span class="sentence" id="s0112" tabindex="0" data-page="4" data-source="It is characterized by its simplicity which makes it convenient to study machine learning.">其简洁性使它便于研究机器学习。</span> <span class="sentence" id="s0113" tabindex="0" data-page="4" data-source="Proofs in Metamath are, as a consequence of the low-level proofsteps, much longer than in other systems as there is no assistance from high-level tactics.">由于证明步骤粒度低且没有高级策略的辅助，Metamath 中的证明远长于其他系统。</span> <span class="sentence" id="s0114" tabindex="0" data-page="4" data-source="Proofs which are trivial in other systems (e.g. n-digit addition or simple ring arithmetic transformations) can be quite tedious in Metamath.">在其他系统中很简单的证明（如多位数加法或简单的环算术变换），在 Metamath 中也可能相当繁琐。</span> <span class="sentence" id="s0115" tabindex="0" data-page="5" data-source="The absence of tactics is both a benefit, as the models sees and learns on everything, and a challenge, as proofs of even simple exercises require hundreds of proofsteps.">缺少策略既有好处——模型能看见并学习全部步骤，也带来挑战——即使简单习题也需要数百个证明步骤。</span></p>
+<h3><span class="sentence" id="s0116" tabindex="0" data-page="5" data-source="4.1.1 GPT-f">4.1.1 GPT-f</span></h3>
+<p><span class="sentence" id="s0117" tabindex="0" data-page="5" data-source="We report the pass rate of GPT-f applied to Metamath as described in Polu &amp; Sutskever (2020).">我们按照 Polu 与 Sutskever（2020）的方法，报告 GPT-f 应用于 Metamath 的通过率。</span> <span class="sentence" id="s0118" tabindex="0" data-page="5" data-source="We use a model with 700m learnable parameters.">我们使用一个具有 7 亿可学习参数的模型。</span> <span class="sentence" id="s0119" tabindex="0" data-page="5" data-source="The model is trained on an updated dump of the set.mm library (but similar synthetic datasets), using the log-probability based search as reported in Table 8 of the GPT-f paper.">模型在更新后的 set.mm 库转储（使用类似的合成数据集）上训练，并采用 GPT-f 论文表 8 所述的基于对数概率的搜索。</span> <span class="sentence" id="s0120" tabindex="0" data-page="5" data-source="The model achieves a Pass@1 of 1.3% and a Pass@8 of 1.6% on miniF2F-test.">在 miniF2F-test 上，模型取得 1.3% 的 Pass@1 和 1.6% 的 Pass@8。</span> <span class="sentence" id="s0121" tabindex="0" data-page="5" data-source="As expected, these numbers are quite low due to the length of typical proofs for even simple math exercises.">正如预期，这些数值相当低，因为即使是简单的数学练习，其典型证明也很长。</span> <span class="sentence" id="s0122" tabindex="0" data-page="5" data-source="The average proof length is also reported in Table 3.">平均证明长度也在表 3 中报告。</span></p>
+<h3><span class="sentence" id="s0123" tabindex="0" data-page="5" data-source="4.2 Lean">4.2 Lean</span></h3>
+<p><span class="sentence" id="s0124" tabindex="0" data-page="5" data-source="In comparison to Metamath, Lean benefits from a large number of powerful tactics to assist formalization efforts.">与 Metamath 相比，Lean 得益于大量强大的策略，它们能够辅助形式化工作。</span> <span class="sentence" id="s0125" tabindex="0" data-page="5" data-source="Typical Lean proofs are much shorter than Metamath&#x27;s.">典型的 Lean 证明比 Metamath 证明短得多。</span> <span class="sentence" id="s0126" tabindex="0" data-page="5" data-source="This is also a formal system of interest as it has received a lot of attention from the mathematical community as recent theories have successfully been formalized in Lean (Perfectoid Spaces, Liquid Tensor experiment).">Lean 也备受关注，因为数学界对它投入了大量兴趣，并且近年的理论已成功在 Lean 中形式化，例如完美空间和 Liquid Tensor 实验。</span> <span class="sentence" id="s0127" tabindex="0" data-page="5" data-source="Lean is also associated with the IMO Grand Challenge which aims to organize a formal-to-formal challenge during the upcoming IMO competitions.">Lean 还与 IMO Grand Challenge 相关；该倡议计划在未来的 IMO 竞赛期间组织形式化到形式化挑战。</span></p>
+<h3><span class="sentence" id="s0128" tabindex="0" data-page="5" data-source="4.2.1 tidy baseline">4.2.1 tidy 基线</span></h3>
+<p><span class="sentence" id="s0129" tabindex="0" data-page="5" data-source="We use the generic best-first search algorithm presented in PACT.">我们使用 PACT 提出的通用最佳优先搜索算法。</span> <span class="sentence" id="s0130" tabindex="0" data-page="5" data-source="The algorithm works as follows: Given a list of tactics L with priority, we maintain a priority queue Q of tactic states whose priority is given by the priority of the last applied tactic in L that led to it.">算法如下：给定带优先级的策略列表 L，我们维护策略状态的优先队列 Q；每个状态的优先级由 L 中最后一个被应用并导向该状态的策略决定。</span> <span class="sentence" id="s0131" tabindex="0" data-page="5" data-source="While Q is not empty, we pop the top tactic state t from Q. We iterate through L and apply each tactic to t.">只要 Q 非空，就弹出队首策略状态 t，遍历 L 并把每个策略应用于 t。</span> <span class="sentence" id="s0132" tabindex="0" data-page="5" data-source="If no error is raised, we capture the returned tactic states from Lean and insert them back into Q.">若未引发错误，就捕获 Lean 返回的策略状态并重新插入 Q。</span> <span class="sentence" id="s0133" tabindex="0" data-page="5" data-source="We use the same terminology as in PACT: maximum queue size q_max, depth limit d_max. We also enforce a budget of i_max iterations of the outer loop.">沿用 PACT 的术语：最大队列大小 q_max、深度限制 d_max，并额外设置外层循环的迭代预算 i_max。</span> <span class="sentence" id="s0134" tabindex="0" data-page="5" data-source="When Q&#x27;s size reaches q_max, all the tactic states to be inserted are discarded. We do not expand the next tactic state when the depth is beyond d_max.">当 Q 的大小达到 q_max 时，所有待插入的策略状态都被丢弃；当下一状态的深度超过 d_max 时，不再扩展它。</span> <span class="sentence" id="s0135" tabindex="0" data-page="5" data-source="This loop is run until a proof is found or the iterations budget is exhausted.">循环持续运行，直到找到证明或迭代预算耗尽。</span> <span class="sentence" id="s0136" tabindex="0" data-page="5" data-source="For consistency checking, we run the tidy baseline under the same settings and on the same test set as in PACT except that we don&#x27;t set a global timeout.">为检查一致性，我们在与 PACT 相同的设置和测试集上运行 tidy 基线，但不设置全局超时。</span> <span class="sentence" id="s0137" tabindex="0" data-page="6" data-source="Our implementation achieved a 10.5% pass rate on mathlib&#x27;s test split. This result is comparable to the reported 9.9% in PACT given the waived global timeout.">我们的实现在线性数学库测试划分上达到 10.5% 的通过率；考虑到取消了全局超时，这与 PACT 报告的 9.9% 相当。</span> <span class="sentence" id="s0138" tabindex="0" data-page="6" data-source="In addition to the curated list of tactics L used in PACT, we added 4 high-level tactics HL=[nlinarith, linarith, ring_nf, norm_num] to L with higher priorities than the others.">除 PACT 使用的精选策略列表 L 外，我们还加入 4 个优先级更高的高级策略 HL=[nlinarith, linarith, ring_nf, norm_num]。</span></p>
+<table><caption><span class="sentence" id="s0139" tabindex="0" data-page="6" data-source="Table 2: Number of solved statements in miniF2F for different i_max values and Lean&#x27;s built-in tidy tactic. All experiments use q_max=128, d_max=8 and L+HL.">表 2：tidy 基线在不同 i_max 取值下，以及 Lean 内置 tidy 策略在 miniF2F 中解决的陈述数。所有实验采用 q_max=128、d_max=8 和 L+HL。</span></caption><thead><tr><th><span class="sentence" id="s0140" tabindex="0" data-page="6" data-source="Parameters">参数</span></th><th><span class="sentence" id="s0141" tabindex="0" data-page="6" data-source="miniF2F-valid">miniF2F-valid</span></th><th><span class="sentence" id="s0142" tabindex="0" data-page="6" data-source="miniF2F-test">miniF2F-test</span></th></tr></thead><tbody><tr><td><span class="sentence" id="s0143" tabindex="0" data-page="6" data-source="Lean tidy">Lean tidy</span></td><td><span class="sentence" id="s0144" tabindex="0" data-page="6" data-source="12 / 244">12 / 244</span></td><td><span class="sentence" id="s0145" tabindex="0" data-page="6" data-source="13 / 244">13 / 244</span></td></tr><tr><td><span class="sentence" id="s0146" tabindex="0" data-page="6" data-source="i_max=1">i_max=1</span></td><td><span class="sentence" id="s0147" tabindex="0" data-page="6" data-source="21 / 244">21 / 244</span></td><td><span class="sentence" id="s0148" tabindex="0" data-page="6" data-source="23 / 244">23 / 244</span></td></tr><tr><td><span class="sentence" id="s0149" tabindex="0" data-page="6" data-source="i_max=2">i_max=2</span></td><td><span class="sentence" id="s0150" tabindex="0" data-page="6" data-source="31 / 244">31 / 244</span></td><td><span class="sentence" id="s0151" tabindex="0" data-page="6" data-source="29 / 244">29 / 244</span></td></tr><tr><td><span class="sentence" id="s0152" tabindex="0" data-page="6" data-source="i_max=4">i_max=4</span></td><td><span class="sentence" id="s0153" tabindex="0" data-page="6" data-source="38 / 244">38 / 244</span></td><td><span class="sentence" id="s0154" tabindex="0" data-page="6" data-source="41 / 244">41 / 244</span></td></tr><tr><td><span class="sentence" id="s0155" tabindex="0" data-page="6" data-source="i_max=8">i_max=8</span></td><td><span class="sentence" id="s0156" tabindex="0" data-page="6" data-source="41 / 244">41 / 244</span></td><td><span class="sentence" id="s0157" tabindex="0" data-page="6" data-source="44 / 244">44 / 244</span></td></tr><tr><td><span class="sentence" id="s0158" tabindex="0" data-page="6" data-source="i_max=16">i_max=16</span></td><td><span class="sentence" id="s0159" tabindex="0" data-page="6" data-source="41 / 244">41 / 244</span></td><td><span class="sentence" id="s0160" tabindex="0" data-page="6" data-source="44 / 244">44 / 244</span></td></tr><tr><td><span class="sentence" id="s0161" tabindex="0" data-page="6" data-source="i_max=32">i_max=32</span></td><td><span class="sentence" id="s0162" tabindex="0" data-page="6" data-source="41 / 244">41 / 244</span></td><td><span class="sentence" id="s0163" tabindex="0" data-page="6" data-source="43 / 244">43 / 244</span></td></tr><tr><td><span class="sentence" id="s0164" tabindex="0" data-page="6" data-source="i_max=64">i_max=64</span></td><td><span class="sentence" id="s0165" tabindex="0" data-page="6" data-source="41 / 244">41 / 244</span></td><td><span class="sentence" id="s0166" tabindex="0" data-page="6" data-source="44 / 244">44 / 244</span></td></tr><tr><td><span class="sentence" id="s0167" tabindex="0" data-page="6" data-source="i_max=128">i_max=128</span></td><td><span class="sentence" id="s0168" tabindex="0" data-page="6" data-source="41 / 244">41 / 244</span></td><td><span class="sentence" id="s0169" tabindex="0" data-page="6" data-source="44 / 244">44 / 244</span></td></tr></tbody></table>
+<h3><span class="sentence" id="s0170" tabindex="0" data-page="6" data-source="4.2.2 GPT-f/PACT">4.2.2 GPT-f/PACT</span></h3>
+<p><span class="sentence" id="s0171" tabindex="0" data-page="6" data-source="We report the pass rate of GPT-f/PACT as described in Han et al. (2021). We use a model with 700M learnable parameters.">我们按照 Han 等人（2021）的描述报告 GPT-f/PACT 的通过率，并使用一个具有 7 亿可学习参数的模型。</span> <span class="sentence" id="s0172" tabindex="0" data-page="6" data-source="The model is trained on an updated dump of the mathlib library using the PACT methodology denoted in the paper as mix2 &gt; mix1 + tactic in Figure 6.">模型采用 PACT 方法，在更新后的 mathlib 库转储上训练，对应论文图 6 中的 mix2 > mix1 + tactic。</span> <span class="sentence" id="s0173" tabindex="0" data-page="6" data-source="The model achieves a Pass@1 of 24.6% and a Pass@8 of 29.2% on miniF2F-test.">模型在 miniF2F-test 上取得 24.6% 的 Pass@1 和 29.2% 的 Pass@8。</span></p>
+<table><caption><span class="sentence" id="s0174" tabindex="0" data-page="6" data-source="Table 3: Baseline performance on Metamath and Lean. All proof searches are provided with a 128 expansions budget.">表 3：Metamath 与 Lean 的基线性能；所有证明搜索均使用 128 次扩展预算。</span></caption><thead><tr><th><span class="sentence" id="s0175" tabindex="0" data-page="6" data-source="Formal system/model">形式系统/模型</span></th><th><span class="sentence" id="s0176" tabindex="0" data-page="6" data-source="Valid: length/Pass@1/Pass@8">验证集：长度/Pass@1/Pass@8</span></th><th><span class="sentence" id="s0177" tabindex="0" data-page="6" data-source="Test: length/Pass@1/Pass@8">测试集：长度/Pass@1/Pass@8</span></th></tr></thead><tbody><tr><td><span class="sentence" id="s0178" tabindex="0" data-page="6" data-source="Metamath GPT-f">Metamath GPT-f</span></td><td><span class="sentence" id="s0179" tabindex="0" data-page="6" data-source="16.2 / 1.0% / 2.0%">16.2 / 1.0% / 2.0%</span></td><td><span class="sentence" id="s0180" tabindex="0" data-page="6" data-source="20.3 / 1.3% / 1.6%">20.3 / 1.3% / 1.6%</span></td></tr><tr><td><span class="sentence" id="s0181" tabindex="0" data-page="6" data-source="Lean tidy">Lean tidy</span></td><td><span class="sentence" id="s0182" tabindex="0" data-page="6" data-source="1.7 / 16.8% / -">1.7 / 16.8% / -</span></td><td><span class="sentence" id="s0183" tabindex="0" data-page="6" data-source="1.8 / 18.0% / -">1.8 / 18.0% / -</span></td></tr><tr><td><span class="sentence" id="s0184" tabindex="0" data-page="6" data-source="Lean GPT-f">Lean GPT-f</span></td><td><span class="sentence" id="s0185" tabindex="0" data-page="6" data-source="2.6 / 23.9% / 29.3%">2.6 / 23.9% / 29.3%</span></td><td><span class="sentence" id="s0186" tabindex="0" data-page="6" data-source="2.5 / 24.6% / 29.2%">2.5 / 24.6% / 29.2%</span></td></tr></tbody></table>
+<figure><img alt="miniF2F proved-statement counts" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8QEBEQCgwSExIQEw8QEBD/2wBDAQMDAwQDBAgEBAgQCwkLEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBD/wAARCAEEAhIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9U6KKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAprU6mtQALTqatOoAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAGtQtDULQA6iiigAooooAKKKKACiiigAooooAKKKKACiiigBrULQ1C0AOooooAKKKKACiiigAooooAKKKKACiiigAooooAa1C0NQtADqKKKACiiigAooooAKKKKACiii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"><figcaption><span class="sentence" id="s0187" tabindex="0" data-page="5" data-source="Figure 1: Counts of successfully proved statements in miniF2F. Green bar: results from Lean GPT-f. Red bar: best result from the tidy baseline. Blue bar: results from Metamath GPT-f.">图 1：miniF2F 中成功证明的陈述数量。绿柱：Lean GPT-f；红柱：tidy 基线的最佳结果；蓝柱：Metamath GPT-f。</span></figcaption></figure>
+<h3><span class="sentence" id="s0188" tabindex="0" data-page="6" data-source="4.3 Discussion">4.3 讨论</span></h3>
+<h3><span class="sentence" id="s0189" tabindex="0" data-page="6" data-source="4.3.1 Access to high-level tactics">4.3.1 使用高级策略</span></h3>
+<p><span class="sentence" id="s0190" tabindex="0" data-page="6" data-source="One goal of miniF2F is to study the comparison of performance across formal systems.">miniF2F 的目标之一，是研究不同形式系统之间的性能比较。</span> <span class="sentence" id="s0191" tabindex="0" data-page="6" data-source="In this section we reported the performance of the same methodology applied to both Lean and Metamath.">本节把同一种 GPT-f 方法分别应用于 Lean 和 Metamath。</span> <span class="sentence" id="s0192" tabindex="0" data-page="7" data-source="Both models are pre-trained on WebMath and respectively trained on datasets extracted from Lean and Metamath.">两个模型都在 WebMath 上预训练，随后分别在从 Lean 与 Metamath 提取的数据集上训练。</span> <span class="sentence" id="s0193" tabindex="0" data-page="7" data-source="The overall compute deployed at training is comparable in both setup and exactly equivalent at test-time, yet the achieved performance appears drastically superior when applied to Lean.">两种设置投入的总体训练算力相当，测试时算力完全相同，但应用于 Lean 时的性能明显更高。</span> <span class="sentence" id="s0194" tabindex="0" data-page="7" data-source="We hypothesize that this is mainly explained by the model&#x27;s access to high-level tactics when applied to Lean, enabling the model to learn how to guide Lean&#x27;s automation in an effective way.">我们推测，主要原因是模型在 Lean 中能够使用高级策略，从而学会有效引导 Lean 的自动化。</span></p>
+<p><span class="sentence" id="s0195" tabindex="0" data-page="7" data-source="An example of this high-level guidance behavior is well exemplified by the following proof of the statement algebra_sqineq_2unitcircatblt1 where the model heavily relies on Lean&#x27;s nlinarith solver but provides it with essential premises to successfully guide the search.">下面的 algebra_sqineq_2unitcircatblt1 证明很好地体现了这种高级引导：模型高度依赖 Lean 的 nlinarith 求解器，但同时向它提供了成功搜索所必需的前提。</span></p>
+<pre><code>theorem algebra_sqineq_2unitcircatblt1
+  (a b : ℝ) (h : a^2 + b^2 = 2) :
+  a * b ≤ 1 :=
+begin
+  nlinarith [sq_nonneg a, sq_nonneg b, sq_nonneg (a - b)]
+end</code></pre>
+<p><span class="sentence" id="s0196" tabindex="0" data-page="7" data-source="The statement above requires to prove the assertion forall a,b in R, a^2 + b^2 = 2 implies a*b &lt;= 1.">上述陈述要求证明：∀a,b∈ℝ，a²+b²=2 → a·b≤1。</span> <span class="sentence" id="s0197" tabindex="0" data-page="7" data-source="In Metamath, GPT-f fails to find a proof as it requires a very large number of steps to appropriately rewrite the goal in a way that is amenable to the use of set.mm&#x27;s existing theorems.">在 Metamath 中，GPT-f 无法找到证明，因为它需要大量步骤才能把目标恰当地改写为可使用 set.mm 现有定理的形式。</span> <span class="sentence" id="s0198" tabindex="0" data-page="7" data-source="The tidy baseline also fails to find a proof of that statement as nlinarith is not capable of solving the goal without being passed extraneous premises.">tidy 基线同样无法找到该陈述的证明，因为如果不传入额外前提，nlinarith 无法解决目标。</span> <span class="sentence" id="s0199" tabindex="0" data-page="7" data-source="These results motivate the use of neural theorem proving with formal systems that expose powerful high level tactics and also suggest the potential of a closer collaboration between formal systems and machine learning practitioners.">这些结果支持在能够提供强大高级策略的形式系统中使用神经定理证明，也表明形式系统研究者与机器学习研究者之间更紧密合作的潜力。</span> <span class="sentence" id="s0200" tabindex="0" data-page="7" data-source="It also motivates the use of generative models in that setup as the arguments required by high-level tactics to succeed on non trivial problems generally do not exist in the context of the statement and therefore have to be generated ex-nihilo.">它还支持在这一设置中使用生成模型，因为高级策略要在非平凡问题上成功，通常需要上下文中并不存在的参数，因而必须从零生成。</span></p>
+<h3><span class="sentence" id="s0201" tabindex="0" data-page="7" data-source="4.3.2 Comparison of informal and formal setups">4.3.2 非形式化与形式化设置的比较</span></h3>
+<p><span class="sentence" id="s0202" tabindex="0" data-page="7" data-source="The use of formal systems for neural theorem proving is often motivated by the role of the formal system as a verifier, enabling more advanced neural search strategies than possible in a fully informal setup where the generation of a model can&#x27;t be verified automatically, as well as the access to powerful tactics.">在神经定理证明中使用形式系统，常见动机包括：形式系统可充当验证器，使研究者能够采用比完全非形式化设置更高级的神经搜索策略；同时还能使用强大的策略。</span> <span class="sentence" id="s0203" tabindex="0" data-page="7" data-source="Our formalization of a subset of the MATH informal dataset provides an interesting approximate quantification of the benefit of having access to a formal system in the context of neural theorem proving.">我们对 MATH 非形式化数据集的一个子集进行了形式化，这为量化形式系统在神经定理证明中的收益提供了一个有趣的近似。</span> <span class="sentence" id="s0204" tabindex="0" data-page="7" data-source="Approximate, because we only formalized a small subset of the MATH statements, but nonetheless useful since we drew uniformly from the 5 difficulty levels.">之所以只是近似，是因为我们仅形式化了少量 MATH 陈述；但由于样本从 5 个难度级别均匀抽取，这一比较仍然有用。</span> <span class="sentence" id="s0205" tabindex="0" data-page="7" data-source="In Hendrycks et al. (2021), the performance of GPT-3 (which is a larger model than the GPT-f model studied here) is reported to be 6.0% in the algebra category and 3.9% in the number theory category.">Hendrycks 等人（2021）报告，规模大于本文 GPT-f 的 GPT-3 在代数类上的成绩为 6.0%，在数论类上为 3.9%。</span> <span class="sentence" id="s0206" tabindex="0" data-page="7" data-source="GPT-f applied to Lean by comparison achieves 51.4% in the algebra category and 41.7% in the number theory category.">相比之下，应用于 Lean 的 GPT-f 在代数类达到 51.4%，在数论类达到 41.7%。</span> <span class="sentence" id="s0207" tabindex="0" data-page="7" data-source="It is also worthwhile to note that the tidy baseline also highly outperforms (31.4% in algebra and 30.0% in number theory) GPT-3 in an informal setup demonstrating the benefit of proof automation alone.">还值得注意的是，tidy 基线的表现也远超非形式化设置下的 GPT-3（代数 31.4%，数论 30.0%），说明仅证明自动化本身便能带来收益。</span></p>
+<h3><span class="sentence" id="s0208" tabindex="0" data-page="7" data-source="4.3.3 Limitation">4.3.3 局限性</span></h3>
+<p><span class="sentence" id="s0209" tabindex="0" data-page="7" data-source="With miniF2F being cross-system as the goal, types of problems that are less expressible in certain systems such as geometry and combinatorial problems are less covered.">由于 miniF2F 以跨系统为目标，一些在特定系统中较难表达的问题类型（如几何与组合问题）覆盖不足。</span> <span class="sentence" id="s0210" tabindex="0" data-page="7" data-source="The shift of distribution of problem types may result in skewing the research direction of models when benchmarking on miniF2F.">问题类型的分布偏移，可能会使以 miniF2F 为基准的模型研究方向产生偏斜。</span> <span class="sentence" id="s0211" tabindex="0" data-page="7" data-source="Directionally we aim to fix it and extend the coverage of miniF2F as we grow the benchmark. However, works and efforts on the corresponding library of other systems are required as well.">从方向上看，我们计划在扩展基准时修正这一点并扩大覆盖范围；但这也需要其他系统在相应数学库上的工作与投入。</span></p>
+</section>
+<section id="conclusion">
+<h2><span class="sentence" id="s0212" tabindex="0" data-page="8" data-source="5 Conclusion">5 结论</span></h2>
+<p><span class="sentence" id="s0213" tabindex="0" data-page="8" data-source="We presented miniF2F, a dataset of formal Olympiad-level mathematics problem statements, meant to serve as an initial effort towards cross-system benchmarking of neural mathematical reasoning capabilities in formal environments.">我们提出了 miniF2F：一个由奥赛级数学问题形式化陈述构成的数据集，旨在成为跨系统评测形式环境中神经数学推理能力的初步尝试。</span> <span class="sentence" id="s0214" tabindex="0" data-page="8" data-source="We reported the performance of the neural theorem prover GPT-f on both the Lean and Metamath parts of miniF2F as well as the performance of our non-neural tidy baseline applied to Lean.">我们报告了神经定理证明器 GPT-f 在 miniF2F 的 Lean 和 Metamath 部分上的性能，以及非神经 tidy 基线在 Lean 上的性能。</span> <span class="sentence" id="s0215" tabindex="0" data-page="8" data-source="Then, we discussed these baselines and put them in perspective with previously reported comparable results in informal environments.">随后，我们讨论了这些基线，并结合先前在非形式化环境中报告的可比结果进行分析。</span> <span class="sentence" id="s0216" tabindex="0" data-page="8" data-source="Finally, we hope that miniF2F will prove to be useful to the scientific community working on neural theorem proving and spur advances in this domain.">最后，我们希望 miniF2F 能够服务于神经定理证明研究社区，并推动该领域取得进展。</span></p>
+<h2><span class="sentence" id="s0217" tabindex="0" data-page="8" data-source="Acknowledgments">致谢</span></h2>
+<p><span class="sentence" id="s0218" tabindex="0" data-page="8" data-source="We are grateful to Wenda Li and Xavier Martinet for contributing the Isabelle and HOL Light statements currently available in miniF2F, paving the way towards a full support of Isabelle and HOL Light, as well as their feedback and encouragement in the process.">我们感谢 Wenda Li 和 Xavier Martinet 贡献了 miniF2F 当前提供的 Isabelle 与 HOL Light 陈述，为全面支持这两个系统铺平了道路，并感谢他们在此过程中的反馈与鼓励。</span> <span class="sentence" id="s0219" tabindex="0" data-page="8" data-source="We thank Harri Edwards for his comments that greatly improved the manuscript.">我们感谢 Harri Edwards 的意见，它们显著改进了本文。</span></p>
+</section>
+<section id="references">
+<h2><span class="sentence" id="s0220" tabindex="0" data-page="8" data-source="References">参考文献</span></h2>
+<ol class="references">
+<li><span class="sentence" id="s0221" tabindex="0" data-page="9" data-source="Bansal et al. HOList: An environment for machine learning of higher order logic theorem proving. ICML, 2019.">Bansal 等，HOList：面向高阶逻辑定理证明机器学习的环境，ICML，2019。</span></li>
+<li><span class="sentence" id="s0222" tabindex="0" data-page="9" data-source="Bansal et al. Learning to reason in large theories without imitation. 2019.">Bansal 等，不依赖模仿在大型理论中学习推理，2019。</span></li>
+<li><span class="sentence" id="s0223" tabindex="0" data-page="9" data-source="Brown et al. Language models are few-shot learners. NeurIPS, 2020.">Brown 等，语言模型是少样本学习器，NeurIPS，2020。</span></li>
+<li><span class="sentence" id="s0224" tabindex="0" data-page="9" data-source="Buzzard, Commelin, and Massot. Lean perfectoid spaces. 2019.">Buzzard、Commelin 与 Massot，Lean 完美空间，2019。</span></li>
+<li><span class="sentence" id="s0225" tabindex="0" data-page="9" data-source="Deng et al. ImageNet: A large-scale hierarchical image database. CVPR, 2009.">Deng 等，ImageNet：一个大规模分层图像数据库，CVPR，2009。</span></li>
+<li><span class="sentence" id="s0226" tabindex="0" data-page="9" data-source="Han et al. Proof artifact co-training for theorem proving with language models. 2021.">Han 等，面向语言模型定理证明的证明产物协同训练，2021。</span></li>
+<li><span class="sentence" id="s0227" tabindex="0" data-page="9" data-source="Haslbeck, Nipkow, and Wimmer. Proof Ground. 2019.">Haslbeck、Nipkow 与 Wimmer，Proof Ground，2019。</span></li>
+<li><span class="sentence" id="s0228" tabindex="0" data-page="9" data-source="Hendrycks et al. Measuring mathematical problem solving with the MATH dataset. 2021.">Hendrycks 等，使用 MATH 数据集衡量数学问题求解能力，2021。</span></li>
+<li><span class="sentence" id="s0229" tabindex="0" data-page="9" data-source="The mathlib Community. The Lean mathematical library. CPP, 2020.">mathlib 社区，Lean 数学库，CPP，2020。</span></li>
+<li><span class="sentence" id="s0230" tabindex="0" data-page="9" data-source="Paliwal et al. Graph representations for higher-order logic and theorem proving. AAAI, 2020.">Paliwal 等，用于高阶逻辑与定理证明的图表示，AAAI，2020。</span></li>
+<li><span class="sentence" id="s0231" tabindex="0" data-page="9" data-source="Paperno et al. The LAMBADA dataset: Word prediction requiring a broad discourse context. ACL, 2016.">Paperno 等，LAMBADA 数据集：需要广泛语篇上下文的词预测，ACL，2016。</span></li>
+<li><span class="sentence" id="s0232" tabindex="0" data-page="9" data-source="Polu and Sutskever. Generative language modeling for automated theorem proving. 2020.">Polu 与 Sutskever，用于自动定理证明的生成式语言建模，2020。</span></li>
+<li><span class="sentence" id="s0233" tabindex="0" data-page="9" data-source="Rajpurkar et al. SQuAD: 100,000+ questions for machine comprehension of text. EMNLP, 2016.">Rajpurkar 等，SQuAD：十万余个机器阅读理解问题，EMNLP，2016。</span></li>
+<li><span class="sentence" id="s0234" tabindex="0" data-page="9" data-source="Saxton et al. Analysing mathematical reasoning abilities of neural models. ICLR, 2019.">Saxton 等，分析神经模型的数学推理能力，ICLR，2019。</span></li>
+<li><span class="sentence" id="s0235" tabindex="0" data-page="9" data-source="Scholze. Liquid tensor experiment. 2020.">Scholze，Liquid Tensor 实验，2020。</span></li>
+<li><span class="sentence" id="s0236" tabindex="0" data-page="9" data-source="Selsam et al. IMO Grand Challenge. 2019.">Selsam 等，IMO Grand Challenge，2019。</span></li>
+<li><span class="sentence" id="s0237" tabindex="0" data-page="9" data-source="Sutcliffe. The CADE ATP System Competition - CASC. 2016.">Sutcliffe，CADE ATP 系统竞赛 CASC，2016。</span></li>
+<li><span class="sentence" id="s0238" tabindex="0" data-page="9" data-source="Sutcliffe. The TPTP Problem Library and Associated Infrastructure. 2017.">Sutcliffe，TPTP 问题库及相关基础设施，2017。</span></li>
+<li><span class="sentence" id="s0239" tabindex="0" data-page="9" data-source="Wang et al. GLUE: A multi-task benchmark and analysis platform for natural language understanding. ICLR, 2019.">Wang 等，GLUE：自然语言理解的多任务基准与分析平台，ICLR，2019。</span></li>
+<li><span class="sentence" id="s0240" tabindex="0" data-page="9" data-source="Welleck et al. NaturalProofs: Mathematical theorem proving in natural language. 2021.">Welleck 等，NaturalProofs：自然语言数学定理证明，2021。</span></li>
+<li><span class="sentence" id="s0241" tabindex="0" data-page="9" data-source="Whalen. Holophrasm: a neural automated theorem prover for higher-order logic. 2016.">Whalen，Holophrasm：面向高阶逻辑的神经自动定理证明器，2016。</span></li>
+<li><span class="sentence" id="s0242" tabindex="0" data-page="9" data-source="Wiedijk. Formalizing 100 theorems. 2008.">Wiedijk，形式化 100 个定理，2008。</span></li>
+<li><span class="sentence" id="s0243" tabindex="0" data-page="9" data-source="Wu et al. INT: an inequality benchmark for evaluating generalization in theorem proving. ICLR, 2021.">Wu 等，INT：评估定理证明泛化能力的不等式基准，ICLR，2021。</span></li>
+<li><span class="sentence" id="s0244" tabindex="0" data-page="9" data-source="Yang and Deng. Learning to prove theorems via interacting with proof assistants. ICML, 2019.">Yang 与 Deng，通过与证明助理交互学习证明定理，ICML，2019。</span></li>
+</ol></section>
+<section id="appendix-a">
+<h2><span class="sentence" id="s0245" tabindex="0" data-page="10" data-source="Appendix A: Example of statement in miniF2F">附录 A：miniF2F 陈述示例</span></h2>
+<p><span class="sentence" id="s0246" tabindex="0" data-page="10" data-source="Table 4: Problem 11 of 2000 AMC 12 is formalized with proof in different languages in miniF2F.">表 4 展示了 2000 年 AMC 12 第 11 题在 miniF2F 中以不同语言形式化并附带证明的版本。</span> <span class="sentence" id="s0247" tabindex="0" data-page="10" data-source="The proof is optionally attached thus not part of the benchmark. The proof in Metamath is too long to be fully displayed.">证明是可选附件，不属于基准本身；Metamath 证明过长，无法完整展示。</span></p>
+<div class="code-grid"><h3><span class="sentence" id="s0248" tabindex="0" data-page="10" data-source="Natural language">自然语言</span></h3><p><span class="sentence" id="s0249" tabindex="0" data-page="10" data-source="Two non-zero real numbers, a and b, satisfy ab = a - b. Which of the following is a possible value of a/b + b/a - ab? (A) -2 (B) -1 (C) 1/2 (D) 3/2 (E) 2">两个非零实数 a、b 满足 ab=a-b。下列哪一个可能是 a/b+b/a-ab 的值？(A) -2 (B) -1 (C) 1/2 (D) 3/2 (E) 2</span></p><h3>Lean</h3><pre><code>theorem amc12_2000_p11
+  (a b : ℝ)
+  (h₀ : a ≠ 0 ∧ b ≠ 0)
+  (h₁ : a * b = a - b) :
+  a / b + b / a - a * b = 2 :=
+begin
+  field_simp [h₀.1, h₀.2],
+  simp only [h₁, mul_comm, mul_sub],
+  ring,
+end</code></pre>
+    <h3>Isabelle</h3><pre><code>theorem amc12_2000_p11:
+  fixes a b::real
+  assumes "a ≠ 0" "b ≠ 0" and "a * b = a - b"
+  shows "a / b + b / a - a * b = 2"
+  using assms
+  by (smt (verit, ccfv_threshold)
+    diff_divide_distrib div_self divide_divide_times_eq
+    eq_divide_imp nonzero_mult_div_cancel_left)</code></pre></div>
+</section>
+<section id="appendix-b">
+<h2><span class="sentence" id="s0250" tabindex="0" data-page="11" data-source="Appendix B: Performance by difficulty on statements formalized from MATH dataset">附录 B：MATH 数据集形式化陈述的分难度性能</span></h2>
+<p><span class="sentence" id="s0251" tabindex="0" data-page="11" data-source="The MATH dataset assigns a difficulty ranging from 1 to 5 to each of its problems. Tables 5 and 6 report the number of proved statements split by difficulty level on the algebra and number theory categories.">MATH 数据集为每道问题分配 1 至 5 的难度等级；表 5 和表 6 分别报告代数与数论类别中按难度划分的已证明陈述数量。</span></p>
+<table><caption><span class="sentence" id="s0252" tabindex="0" data-page="11" data-source="Table 5: Counts of successfully proved statements formalized from MATH-Algebra in miniF2F v1 split by difficulty.">表 5：miniF2F v1 中从 MATH-代数形式化的陈述，按难度统计成功证明数量。</span></caption><thead><tr><th><span class="sentence" id="s0253" tabindex="0" data-page="11" data-source="Model">模型</span></th><th><span class="sentence" id="s0254" tabindex="0" data-page="11" data-source="Valid levels 1-5">验证集等级 1-5</span></th><th><span class="sentence" id="s0255" tabindex="0" data-page="11" data-source="Test levels 1-5">测试集等级 1-5</span></th></tr></thead><tbody><tr><td><span class="sentence" id="s0256" tabindex="0" data-page="11" data-source="Metamath/GPT-f">Metamath/GPT-f</span></td><td><span class="sentence" id="s0257" tabindex="0" data-page="11" data-source="1 0 0 0 0">1 0 0 0 0</span></td><td><span class="sentence" id="s0258" tabindex="0" data-page="11" data-source="2 0 1 0 1">2 0 1 0 1</span></td></tr><tr><td><span class="sentence" id="s0259" tabindex="0" data-page="11" data-source="Lean/tidy">Lean/tidy</span></td><td><span class="sentence" id="s0260" tabindex="0" data-page="11" data-source="6 4 2 2 1">6 4 2 2 1</span></td><td><span class="sentence" id="s0261" tabindex="0" data-page="11" data-source="6 4 7 3 1">6 4 7 3 1</span></td></tr><tr><td><span class="sentence" id="s0262" tabindex="0" data-page="11" data-source="Lean/GPT-f">Lean/GPT-f</span></td><td><span class="sentence" id="s0263" tabindex="0" data-page="11" data-source="9 7 8 6 2">9 7 8 6 2</span></td><td><span class="sentence" id="s0264" tabindex="0" data-page="11" data-source="8 7 10 7 3">8 7 10 7 3</span></td></tr></tbody></table>
+<table><caption><span class="sentence" id="s0265" tabindex="0" data-page="11" data-source="Table 6: Counts of successfully proved statements formalized from MATH-Number theory in miniF2F v1 split by difficulty.">表 6：miniF2F v1 中从 MATH-数论形式化的陈述，按难度统计成功证明数量。</span></caption><thead><tr><th><span class="sentence" id="s0266" tabindex="0" data-page="11" data-source="Model">模型</span></th><th><span class="sentence" id="s0267" tabindex="0" data-page="11" data-source="Valid levels 1-5">验证集等级 1-5</span></th><th><span class="sentence" id="s0268" tabindex="0" data-page="11" data-source="Test levels 1-5">测试集等级 1-5</span></th></tr></thead><tbody><tr><td><span class="sentence" id="s0269" tabindex="0" data-page="11" data-source="Metamath/GPT-f">Metamath/GPT-f</span></td><td><span class="sentence" id="s0270" tabindex="0" data-page="11" data-source="0 0 0 0 0">0 0 0 0 0</span></td><td><span class="sentence" id="s0271" tabindex="0" data-page="11" data-source="0 0 0 0 0">0 0 0 0 0</span></td></tr><tr><td><span class="sentence" id="s0272" tabindex="0" data-page="11" data-source="Lean/tidy">Lean/tidy</span></td><td><span class="sentence" id="s0273" tabindex="0" data-page="11" data-source="8 3 2 2 2">8 3 2 2 2</span></td><td><span class="sentence" id="s0274" tabindex="0" data-page="11" data-source="7 4 3 2 2">7 4 3 2 2</span></td></tr><tr><td><span class="sentence" id="s0275" tabindex="0" data-page="11" data-source="Lean/GPT-f">Lean/GPT-f</span></td><td><span class="sentence" id="s0276" tabindex="0" data-page="11" data-source="9 5 5 4 2">9 5 5 4 2</span></td><td><span class="sentence" id="s0277" tabindex="0" data-page="11" data-source="10 5 5 3 2">10 5 5 3 2</span></td></tr></tbody></table>
+<p><span class="sentence" id="s0278" tabindex="0" data-page="11" data-source="More broadly, Lean GPT-f is capable of solving any problem that the tidy baseline or Metamath GPT-f can solve in miniF2F.">总体而言，Lean GPT-f 能够解决 tidy 基线或 Metamath GPT-f 在 miniF2F 中能解决的所有问题。</span> <span class="sentence" id="s0279" tabindex="0" data-page="11" data-source="Qualitatively, the problems on which it fails either require multiple non-trivial reasoning steps (outside a few exceptions, problems requiring more than 2 non-trivial steps of mathematical reasoning are generally out of reach of these baselines) or require a cut introduction that is hard to generate, such as generating a non trivial witness.">从定性角度看，它未能解决的问题，要么需要多个非平凡推理步骤（除少数例外，超过两个非平凡数学推理步骤的问题通常超出这些基线的能力），要么需要引入模型难以生成的切割，例如生成一个非平凡见证。</span></p>
+</section>
+      </article>
+
+      <aside class="note">
+        译者说明：本文按句对齐翻译。悬停或聚焦任一中文句子可查看英文原文；页码记录于句子元素中。参考文献保留作者与出处，并翻译题名。
+      </aside>
+    </main>
+  </div>
+
+  <div class="tooltip" id="sentence-tooltip" aria-hidden="true">
+    <span class="tooltip-label">English source</span>
+    <div id="sentence-tooltip-text"></div>
+  </div>
+
+  <script>
+    const tooltip = document.getElementById("sentence-tooltip");
+    const tooltipText = document.getElementById("sentence-tooltip-text");
+    let activeSentence = null;
+
+    function setTooltipPosition(target) {
+      const rect = target.getBoundingClientRect();
+      const tooltipRect = tooltip.getBoundingClientRect();
+      const top = Math.max(12, rect.top - tooltipRect.height - 12);
+      const left = Math.min(
+        window.innerWidth - tooltipRect.width - 12,
+        Math.max(12, rect.left + rect.width / 2 - tooltipRect.width / 2)
+      );
+      tooltip.style.top = `${top}px`;
+      tooltip.style.left = `${left}px`;
+    }
+
+    function showTooltip(target) {
+      const source = target.getAttribute("data-source");
+      if (!source) {
+        return;
+      }
+
+      activeSentence = target;
+      tooltipText.textContent = source;
+      tooltip.setAttribute("aria-hidden", "false");
+      tooltip.classList.add("is-visible");
+      setTooltipPosition(target);
+    }
+
+    function hideTooltip() {
+      activeSentence = null;
+      tooltip.classList.remove("is-visible");
+      tooltip.setAttribute("aria-hidden", "true");
+    }
+
+    document.addEventListener("pointerover", (event) => {
+      const sentence = event.target.closest(".sentence[data-source]");
+      if (sentence) {
+        showTooltip(sentence);
+      }
+    });
+
+    document.addEventListener("focusin", (event) => {
+      const sentence = event.target.closest(".sentence[data-source]");
+      if (sentence) {
+        showTooltip(sentence);
+      }
+    });
+
+    document.addEventListener("pointerout", (event) => {
+      const leavingSentence = event.target.closest(".sentence[data-source]");
+      if (leavingSentence && leavingSentence === activeSentence) {
+        hideTooltip();
+      }
+    });
+
+    document.addEventListener("focusout", (event) => {
+      const leavingSentence = event.target.closest(".sentence[data-source]");
+      if (leavingSentence && leavingSentence === activeSentence) {
+        hideTooltip();
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      const sentence = event.target.closest(".sentence[data-source]");
+      if (!sentence && activeSentence) {
+        hideTooltip();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        hideTooltip();
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if (activeSentence) {
+        setTooltipPosition(activeSentence);
+      }
+    });
+
+    window.addEventListener("scroll", () => {
+      if (activeSentence) {
+        setTooltipPosition(activeSentence);
+      }
+    }, { passive: true });
+  </script>
+</body>
+</html>
